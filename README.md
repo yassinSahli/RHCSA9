@@ -1,1 +1,7 @@
-Download Sublime 3 to enjoy your .txt file : https://www.sublimetext.com/
+Download Sublime 3 for an enhanced experience with the attached .txt file : https://www.sublimetext.com/
+                       .-.
+        .-""`""-.    |(@ @)
+     _/`oOoOoOoOo`\_ \ \-/
+    '.-=-=-=-=-=-=-.' \/ \
+      `-=.=-.-=.=-'    \ /\
+         ^  ^  ^       _H_ \
