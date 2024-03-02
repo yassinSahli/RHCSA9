@@ -9,7 +9,7 @@
 ----------------------------------------------------------------------------------------------------------------------------------------------
 PART 0 :                                                                                                                                      |
 ----------------------------------------------------------------------------------------------------------------------------------------------
-// Most important task : Reset root password //
+*** Most important task : Reset root password ***
 1)Reboot and press SHIFT or F8 until GRUB MENU comes up
 2)Select 2nd choice after rebooting & Press E 
 3)Type rd.break on the 4th line & cntrl X
