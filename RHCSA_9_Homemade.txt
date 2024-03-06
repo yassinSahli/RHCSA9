@@ -1,16 +1,16 @@
 ** In the name of God, the Most Gracious, the Most Merciful **
 ----------------------------------------------------------------------------------------------------------------------------------------------
-                       .-.                                                                                                	 	      |
+                       .-.                                                                                                   				 					|
         .-""`""-.    |(@ @)  ~ Good Luck ~                                                                                                    |
-     _/`oOoOoOoOo`\_ \ \-/                                                                                                   		      |
-    '.-=-=-=-=-=-=-.' \/ \                                                                                              	  	      |
-      `-=.=-.-=.=-'    \ /\                                                                                                   		      |
-         ^  ^  ^       _H_ \                                                                                                   		      |
+     _/`oOoOoOoOo`\_ \ \-/                                                                                                   				  				|
+    '.-=-=-=-=-=-=-.' \/ \                                                                                                    				  			|
+      `-=.=-.-=.=-'    \ /\                                                                                                   				  			|
+         ^  ^  ^       _H_ \                                                                                                   				  			|
 ----------------------------------------------------------------------------------------------------------------------------------------------
 PART 0 :                                                                                                                                      |
 ----------------------------------------------------------------------------------------------------------------------------------------------
-*** Most important task : Reset root password ***
-1)Reboot and press SHIFT or F8 until GRUB MENU comes up
+// Most important task : Reset root password //
+1)Reboot and press SHIFT until GRUB MENU comes up
 2)Select 2nd choice after rebooting & Press E 
 3)Type rd.break on the 4th line & cntrl X
 4)mount -o remount, wr /sysroot
@@ -325,12 +325,9 @@ Conclusion :
 		→ SGID: 2000 (g+s)
 		→ SUID: 4000 (u+s)
 
-
-
 umask → to change defaults permission for ALL users:
 	/etc/login.defs → change defaults permission for simple users.
 	.bashrc → change defaults permission for the current users.
-
 
 
 chmod g+s directory_name OR chmod 2751 directory_name : setgid : setgid : every file or folder will be created on this folder, it will be owned
@@ -794,17 +791,41 @@ Relevant Files:
 /etc/cron.deny: black list of users denying of using cron service.
 /etc/cron.allow: White list of users only they are allowed to use cron.
 
-Exam Scenario 1 : User mary must configure a task.
+Exam Scenario 1: User mary must configure a task.
 Requirement: The local time at 14:23 every day echo "Hello World.". 
 
 crontab -u mary -e
-23 14 * * * echo "Hello World."
+23     14     *     *     * echo "Hello World."
+crontab -l (Verify)
 
-Exam Scenario 2 : Configure a task: plan to run echo hello command at 14:23 every day.
+Exam Scenario 2: Configure a task: plan to run echo hello command at 14:23 every day.
 
 which echo
 crontab -e
-23 14 * * * /bin/echo hello
+23     14     *     *     * /bin/echo hello
+crontab -l (Verify)
+
+Exam Scenario 3: Exécuter le script backup.sh chaque redémarrage du système :
+crontab -e
+@reboot    chmod +x  script.sh ; ./script.sh
+crontab -l (Verify)
+
+Exam Scenario 4: Exécuter le script backup.sh de 07h00  à 14h00  tous les jours 
+de travail (ouvrables) :
+0     7-14     *     *    1-5     bash backup.sh
+crontab -l (Verify)
+
+Exam scenario 5: Sauvegarder le message hello dans le fichier hello.txt à 14h15 et 
+17h30 chaque lundi du mois février
+crontab -e 
+15     14     *     2     1 echo "hello" >> hello.txt
+30     17     *     2     1 echo "hello" >> hello.txt
+crontab -l (Verify)
+
+Exam scenario 6: Afficher le message « tekup » en 2 minutes avant minuit de 
+chaque weekday (jours de travail)
+crontab -e 
+58     23     *     *     1-5 echo "tekup"
 crontab -l (Verify)
 
 
@@ -820,6 +841,20 @@ Relevant Files:
 /etc/at.allow
 /etc/at.deny
 [PS: Same functioning as cron.allow & cron.deny]
+
+Exam Scenario 1 : nettoyer /tmp à 9am en 02 juin dans une file g
+At -q g 9:00 02.06.2024
+Rm -rf   /tmp/*
+
+Exam Scenario 2 : Executer backup.sh minuit
+at 00:00
+bash backup.sh
+
+OR
+
+at midnight
+bash backup.sh
+
 
 
 4) System Logging : (System-journald)
