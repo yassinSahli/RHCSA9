@@ -409,7 +409,7 @@ gpgkey=http://
 
 AppStream File Syntax
 
-vim /etc/yum.repo.d/AppStream
+vim /etc/yum.repo.d/AppStream.rep
 
 [AppStream]
 name=AppStream
@@ -497,7 +497,7 @@ Further relax access to the default document root:
 <Directory "/web">
     #
 
-echo "Free Palestina Sesaon 2" > /web/index.html 
+echo "Free Palestina Season 2" > /web/index.html 
 man semanage fcontext
 semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
 restorecon -R -v /web
