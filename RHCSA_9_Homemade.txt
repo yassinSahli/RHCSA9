@@ -434,6 +434,7 @@ systemctl restart tuned
 Exam Scenario : 
 Configurez le profil recommandé comme étant actif.
 
+systemctl enable tuned
 tuned-adm recommend 
 Result : virtual-guest
 tuned-adm profile virtual-guest 
