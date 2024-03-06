@@ -952,8 +952,8 @@ blkid
 echo "UUID=43f3f811-29ee-4792-849b-86255abb8814" >> /etc/fstab
 mkdir /mountpoint1
 nano /etc/fstab
-UUID=43f3f811-29ee-4792-849b-86255abb8814       /mountpoint1    xfs     defaults        0 0
-save
+	UUID=43f3f811-29ee-4792-849b-86255abb8814       /mountpoint1    xfs     defaults        0 0
+save & exit
 mount -a
 
 Primary Disk 2 : (Size=2G)
@@ -977,7 +977,8 @@ swapon /dev/sda3
 blkid /dev/sda3 
 echo UUID="cdf199fd-6fa0-4426-99be-2006ee5751c8" >> /etc/fstab
 nano /etc/fstab 
-save
+	UUID="cdf199fd-6fa0-4426-99be-2006ee5751c8"	none	swap	defaults	0 0 
+save & exit
 mount -a
 
 
@@ -992,8 +993,8 @@ mkfs.ext4 /dev/vg1/lv1
 mkdir /mountpointLVM
 blkid /dev/vg1/lv1
 echo "UUID="f17ae669-f34f-448e-ad4d-746ed32fb1b0"" >> /etc/fstab
-UUID=f17ae669-f34f-448e-ad4d-746ed32fb1b0       /mountpointLVM  ext4   defaults        0 0
-save
+	UUID=f17ae669-f34f-448e-ad4d-746ed32fb1b0       /mountpointLVM  ext4   defaults        0 0
+save & exit
 mount -a
 lv
 
@@ -1021,8 +1022,8 @@ stratis fs list -→ /dev/stratis/mypool/fs1
 blkid /dev/stratis/mypool/fs1
 echo "UUID=	  " >> /etc/fstab
 nano /etc/fstab
-UUID=		 /fileSystemmp xfs  x-systemd.requires=stratisd.service 0 0 
-save
+	UUID=		 /fileSystemmp xfs  x-systemd.requires=stratisd.service 0 0 
+save & exit
 mount -a
 
 
