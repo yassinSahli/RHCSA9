@@ -1,0 +1,2280 @@
+ +-+-+ +-+-+-+ +-+-+-+-+ +-+-+ +-+-+-+-+ +-+-+-+ +-+-+-+-+ +-+-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+ +-+-+-+-+-+-+-+-+
+ |I|n| |t|h|e| |n|a|m|e| |o|f| |G|o|d|,| |t|h|e| |M|o|s|t| |G|r|a|c|i|o|u|s|,| |t|h|e| |M|o|s|t| |M|e|r|c|i|f|u|l|
+ +-+-+ +-+-+-+ +-+-+-+-+ +-+-+ +-+-+-+-+ +-+-+-+ +-+-+-+-+ +-+-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+ +-+-+-+-+-+-+-+-+
+----------------------------------------------------------------------------------------------------------------------------------------------
+                       .-.                                                                                                   				 					|
+        .-""`""-.    |(@ @)  ~ Good Luck ~                                                                                                    |
+     _/`oOoOoOoOo`\_ \ \-/                                                                                                   				  				|
+    '.-=-=-=-=-=-=-.' \/ \                                                                                                    				  			|
+      `-=.=-.-=.=-'    \ /\                                                                                                   				  			|
+         ^  ^  ^       _H_ \                                                 																																	|
+         																																																																			|
+         																																																																			|
+.------..------..------..------..------.																																																			|
+|R.--. ||H.--. ||C.--. ||S.--. ||A.--. |																																																			|
+| :(): || :/\: || :/\: || :/\: || (\/) |																																																			|
+| ()() || (__) || :\/: || :\/: || :\/: |																																																			|
+| '--'R|| '--'H|| '--'C|| '--'S|| '--'A|																																																			|
+`------'`------'`------'`------'`------'																		                                                  				  			|
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 0 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+// Most important task : Reset root password //
+1)Reboot and press SHIFT until GRUB MENU comes up
+2)Select 2nd choice after rebooting & Press E 
+3)Type rd.break on the 4th line & cntrl X
+4)mount -o remount, wr /sysroot
+5)chroot /sysroot
+6)passwd
+7)touch /.autorelabel 
+8)exit x2
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 1 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+cd directory → change directory,  cd .. → parent directory
+ls : → list, ls -l (ll) → list details, ls -a → list all content, ls -lh → human readable
+pwd → print working directory
+whoami → print user
+touch file → create file
+mkdir dir → make directory
+mkdir -p → make recursive directories 
+cat → print file content
+echo “text”→ print text
+echo “text” > file → delete previous content write text
+echo “text” >> file → add text to previous content
+sed -i '1s/^/text/' f2 → add text to f2 in selected line(1s)
+vim / nano → file editor
+rmdir → delete empty directory
+rm → remove file
+rm -rf → delete directory
+man / help → command information
+cp sourceLocation destinationLocation → copy file
+mv sourceLocation destinationLocation → rename or move file
+ctrl + a → start of sentence
+ctrl + e → end of sentence
+ctrl + c → stop execution
+ctrl + L → clear screen
+su user → switch user
+su - user → switch user and switch to user home directory
+free -h → RAM details with human readable 
+history → command history
+wc → word count
+tree directory → directory content recursively 
+sudo → to execute command with root privilege 
+touch file{1..9} : create from file1 to file9.
+ls * : show all
+ls a?* : show all file’s name starts with a and followed at 
+least by 1one character.
+ls [a-e]* :show all files start with a or e.
+ls [a..e]* :show all files start with a,b,c..e.
+Math annations : echo $((2*2))
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 2 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+1) Create a custom command : can be configure on .bashrc or .bash_profile to become persistent
+nano .basrc 
+alias Fdel="rm -rf"
+source .bashrc
+
+2) Change a bash shell environment variable : 
+nano .bashrc
+HISTSIZE=5000  Controls the size of command history
+source .bashrc  Reload config file
+echo $HISTSIZE
+
+
+Exam Scenario : change the HISTSIZE value to 100000 for all system users.
+nano /etc/profile.d/histsize.sh
+	export HISTSIZE=100000000
+source /etc/profile.d/histsize.sh
+
+3) Finding a file : 
+3.1 Using "Locate" is the best optimal solution to find a certain config file when you don’t know its name or location in the file system
+locate SERVICE | grep KEYWORD
+locate httpd | grep mail
+
+Using grep : 
+(A) Exam Scenario : 
+1)copy “/etc/passwd” under “/home/tekup/”
+2)create a new file called users containing all lines that ends with bash. 
+cp /etc/passwd /home/tekup
+touch users
+grep bash /etc/passwd >> users
+
+
+(B) Exam Scenario : 
+1)copy “/etc/shadow” under “/home/tekup/”, 
+2)create a new file called nopass containing all lines that have ”!!” in them. 
+3)change in the file nopass ,’!!’ with “nopass” under ‘/home/tekup’, 
+4)create a file called start containing all system targets cd 
+
+cp -r /etc/shadow /home/tekup
+grep '!!' /home/tekup/shadow > nopass
+sed 's/!!/nopass/g' nopass > New_nopass
+systemctl list-units --type=target >> /home/tekup/start
+
+
+3.2 Using the hard way : find command | offering more options 
+find /etc/ -perm 644 -name a* -exec ls -la {} \;
+			
+			-name 'a*' specifies that you want to find files with names starting with "a." 
+			-perm 644 specifies that you want to find files with the permission set to 644.
+			-exec ls -l {} \; executes the ls -l command on each found file to display detailed information.
+
+
+Exam Scenario : Trouver tous les fichiers appartenant à l’utilisateur student et qui ont une taille inférieur à 1Ko, puis les copier dans le répertoire /home/consultant1/find
+
+find /home -user student -size -1k -exec cp -a {} /home/consultant1/find  \; 
+
+[!] Always use cp -a in the exam (SELinux Context Reasons)
+[!] Always try to limit the searching scope ( find /home >>>> find / ) 
+
+
+
+Exam Scenario 2 : Copiez /etc/passwd sous le nom « password », remplacer les « : » dans le fichier password par %, puis extraire les champs nom, uid et shell et les sauvegarder dans un fichier nommé /home/consultant1/uid. Afficher par la suite toutes les lignes contenant « /bin/bash » et les sauvegarder dans fichier bash
+cp /etc/passwd password
+cat password | tr ":" "%" | cut -d% -f1,3,7 > /home/consultant1/uid
+grep /bin/bash /home/consultant1/uid > bash
+
+
+
+4) Finding a command file path
+which passwd :show command file path
+which useradd :show command file path
+
+5) Permissions on files & directories: 
+read=r=4, write=w=2, execute=x=1.
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 3 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+1) Hard & Symbolic Links 
+ls -li : list with inode
+
+(A) Hard Links
+touch OriginalFile
+ln OriginalFile HardLinkFile 
+ls -li
+Result : 
+17465756 -rwxr-----. 2 root root  0 Nov  7 23:09 HardLinkFile
+17465756 -rwxr-----. 2 root root  0 Nov  7 23:09 originalFile
+
+→ HardLinkFile will have the same inode & permissions of OriginalFile.Every time the content of OriginalFile is changed, HardLinkFile will be updated real-time. In case the originalFile is deleted, HardLinkFile will continue to exist and will have the same content OriginalFile had before its deletion. 
+
+(B) Symbolic Links
+ln -s OriginalFile SymbolicLinkFile
+ls -li
+Result : 
+17465756 -rwxr-----. 2 root root  0 Nov  7 23:09 originalFile
+17465757 lrwxrwxrwx. 1 root root 12 Nov  7 23:10 SymbolicLinkFile → originalFile
+
+→ SymbolicLinkFile is not sharing neither the same inode, nor the same permissions. Once the originalFile is deleted, the SymbolicLinkFile will no longer be accessible. (Symbolic link = Shortcut in windows OS)
+
+
+2) Archiving + Compression: 
+
+	tar –cvf arch.tar /etc → create archive (without compression)
+	tar -cvfz archive2.tgz /etc/dnf → archive & compression with gzip
+	tar -cvfj archive2.tgz /etc/dnf → archive & compression with bzip2
+	tar –cvfJ arch.tar.xy /etc → compress with XY
+	mkdir /test/
+	tar -xvfj archive2.tgz -C /test/ → Extract Archive with bzip2 with extract_location=/test
+
+NEW QUESTION 
+Method 1:
+Create a backup file named /root/backup.tar.bz2, which contains the contents of /usr/local, bar must use the bzip2 compression.
+
+sudo tar -cjvf /root/backup.tar.bz2 /usr/local
+
+Create a backup file named /root/backup.tar.gz, which contains the contents of /usr/local, bar must use the gzip compression.
+
+tar -czvf /root/file2.tar.bz2 /usr/local 
+
+Method 2:
+sudo tar -cjvf /root/backup.tar.bz2 /usr/local : 
+tar -cvf /root/backup.tar /usr/local
+gzip /root/backup.tar
+ls 
+Output:
+/root/backup.tar.gz
+
+
+tar -czvf /root/file2.tar.bz2 /usr/local : 
+tar -cvf /root/file2.tar /usr/local 
+bzip2 /root/file2.tar
+ls 
+Output:
+/root/file2.tar.bz2
+
+
+
+3) Root Privileges:
+su → Switch to user ROOT 
+usermod -aG wheel wassim → member of group wheel can use sudo 
+/etc/sudoers → sudoers config file
+/etc/sudoers.d → Add other users sudoers config files: File[1] & File[2] & File[3] & File[4](Examples)
+
+*File[1] : 
+nano /etc/sudoers.d/lisa
+Lisa ALL=/usr/bin/passwd ,!/usr/passwd root → Lisa allowed to changer other users password but not the root password.
+
+
+*File[2] : 
+nano /etc/sudoers.d/group_users
+%group_users ALL=/usr/bin/mount /dev/sdb → members of the group users are allowed to mount sdb.
+
+
+*File[3] :
+nano /etc/sudoers.d/amy
+amy ALL=/usr/sbin/useradd,/usr/bin/passwd, ! /usr/bin/passwd root → to allow user amy to create users and reset user passwords, but not for root
+
+*File[4] :
+user20 ALL=(ALL) NOPASSWD: ALL → Allow user20 to use sudo without being prompted for their password.
+
+
+4) Users and Groups 
+
+(A) Users : 
+useradd linda → create uses (with default settings)
+passwd linda → Always specify password after user creation
+
+
+useradd supernova –d /home/superDir –g tekup –G wheel –s /sbin/nologin –u 3004
+		-d : to specify the user’s home directory
+		-g : to specify user’s primary group
+		-G : supplementary groups
+		-u : to specify the user’s UID
+		-s : to specify user’s shell, example of shell:
+		/sbin/nologin : this shell prevents interactive login.
+		/bin/sh : It's less feature-rich than Bash but still provides a shell environment.
+		/sbin/bash : full interactive shell login.
+
+usermod –L linda → linda is locked
+usermod -U linda → linda is Unlocked 
+usermod –e 2023-09-12 linda →  change user expiration date
+usermod -s /bin/bash linda → change default user shell
+userdel linda → user deleted
+chage –d 0 linda : force linda to change the password next time login
+-d set date of last password change to LAST_DAY.
+
+[!] Exam Scenario [!]
+(A) Natasha a comme groupe secondaire exploitations. 
+usermod -aG exploitations Natasha
+(B) Blandine ne doit pas pouvoir se logguer dans le système et son compte est inactif. 
+usermod -s /sbin/nologin blandine (/sbin/nologin est un shell innactif [!] Can be found in /etc/passwd [!])
+usermod -L blandine (Compte Innactif == Compte Verouillé)
+
+
+
+(B) User -Related Files :
+/etc/default/useradd → config file of useradd.
+/etc/login.defs →  default setting of creating a new user.
+/etc/skel → files on this folder will be created to the user home directory upon creation.
+
+touch /etc/skel/News
+useradd test 
+cd /home/test/
+ls
+Result : News
+
+
+
+/etc/security/pwquality.conf → password policy config file. File Explanation : 
+
+		difok =3 un minimum de 3 caractères différents dans un nouveau mot de passe
+		minlen = 8 le mot de passe d'un minimum de 8 caractères
+		ucredit = -1 Requiert au moins 1 lettre majuscule
+		lcredit = -1 Requiert au moins 1 lettre minuscule
+		dcredit = -1 nécessite au moins 1 chiffre
+		ocredit = -1 au moins 1 caractère non alphanumérique
+		minclass = 2 au moins 2 classes de caractères, majuscule, minuscule, chiffre et autres ($, &, %, …)
+		maxrepeat = 3 rejets du mot de passe, si 4 occurrences identiques, plusieurs caractères répétitifs identiques
+		maxclassrepeat = 2 rejets du mot de passe, si 3 caractères consécutifs du même type (alphanumériques et autres)
+
+
+/etc/shadow → where the password hashage is stored.
+
+(C) Groups : 
+groupadd finance
+groupdel finance
+
+(D) Group-Related Files :
+/etc/groups
+
+
+5) File Permission & Ownership 
+
+(A) Permissions : 
+Method 1 : 
+chmod 750 file1
+Method 2 : 
+chmod 000 file1
+chmod u=r+w+x file1
+chmod g=r+w file1
+Result : 
+-rwxrw----. 1 root root 0 Nov  9 14:05 file1
+
+
+(1) chmod 777 test
+	chmod u=r+w+x test
+	chmod g=r+w test
+	chmod o-r test
+Result : 17466137 -rwxrw----. 1 root root  0 Nov  7 23:03 test
+
+
+
+5.2 Files Ownership : 
+(1) chown student: test → test is owned by USER student
+(2) chown :profs test → test is owned by GROUP profs
+(3) chown prof_Math:profs test → test is owned by USER prof_Math and GROUP profs
+
+
+
+5.3 Advanced Permissions : 
+sticky bit : chmod o+t dir1  → Restrict the ability to delete files within dir1
+
+(1) find /home/student -perm -1000 -exec cp -a {} /root/Desktop/perm  → In this case, it's looking for files with the sticky bit set.
+
+(2) find /home/student -perm -2000 -exec cp -a {} /root/Desktop/perm \;  → In this case, it's looking for files with the SGID permissions.
+
+(3) find /home/student -perm -3000 -exec cp -a {} /root/Desktop/perm \; (1) OR (2)
+
+(4) find /home/student -perm -4000 -exec cp -a {} /root/Desktop/perm \; → In this case, it's looking for all files that have the SUID set.
+
+(5) find /home/student -perm -5000 -exec cp -a {} /root/Desktop/perm \; → In this case, it's looking for all files that have both the SUID and the SGID set. 
+
+(6) find /home/student -perm -6000 -exec cp -a {} /root/Desktop/perm \; → In this case, it's looking for all files that have SUID and SGID set.
+
+(7) find /home/student -perm -7000 -exec cp -a {} /root/Desktop/perm \; → In this case, it's looking for all files that have the SUID, SGID, and sticky bit permissions set. 
+
+Conclusion : 
+		→ Sticky Bit: 1000 (o+t)
+		→ SGID: 2000 (g+s)
+		→ SUID: 4000 (u+s)
+
+umask → to change defaults permission for ALL users:
+	/etc/login.defs → change defaults permission for simple users.
+	.bashrc → change defaults permission for the current users.
+
+
+chmod g+s directory_name OR chmod 2751 directory_name : setgid : setgid : every file or folder will be created on this folder, it will be owned
+ 
+chmod o+t dir_name OR chmod 1751 dir_name : sticky bit : to make only the owner of file or sub-directory can delete it.
+
+(Search for umask in /etc/login.defs with control+w if you're using nano )
+umask	027 → chmod 740
+umask	022 → chmod 744
+
+PS: the max permission for a directory is 777 and for a simple file is 666.
+For security reasons, the x perm is omitted for files.
+
+
+To calculate the umask you need to subtract the max permissions from what permission you want as default.
+Example: You want 6(rw)4(r)-
+			Directory : UMASK = 777 - 640 = 137
+			File : 		UMASK = 666 - 640 = 026
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 4 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+1) ACLs:
+
+(A) on Files : 
+
+setfacl -m u:alice:rw f1 → add the user alice to f1 ACL and permissions are set to rw.
+setfacl -m g:annations:rw f1 → add the group annations to the acl.
+setfacl -m u:bob:rw,g:tekup:rw f1 → add user and group to the acl.
+getfacl file → show file access list
+
+(B) on Directories : 
+
+setfacl -m d:u:bob:rw folder1 → the option d is only applied to folders, to make sure the acl will be inherited to sub-folders and files. (ONLY WHEN HE MENTIONS THE CREATED FILES IN THE DIRECTORY SHOULD INHERIT THE SAME PERMISSIONS)
+getfacl -R f1 >acl.save → save acl to a file
+
+
+Exam Scenario : 
+(A) En tant que consultant1, créez l’arborescence rep1/rep2/rep3/rep4 :
+(B) Enlevez tous les droits pour les autres sur rep1, rep2, rep3 et rep4
+(C) Positionnez les ACLs nécessaires pour permettre à consultant2 de lister le contenu de rep2 et d’écrire dans rep3.
+mkdir -p /rep1/rep2/rep3/rep4
+chmod -R o=--- rep1
+setfacl -R -m u:consultant2:rx home/consultant1/rep1 (We need to allow access to rep1/rep2/rep3/rep4 with -R cause we blocked it in the (B))
+[!] Lister le Contenu → Read + Execute 
+setfacl -m u:consultant2:rw /rep1/rep2/rep3
+!] Ecrire dans rep → Read + Execute
+
+2) Network : 
+nmtui → console where you can set hostname & connections
+nmcli → connection reload to reload all connection files
+hostnamectl hostname “hostname”
+systemctl restart NetworkManager
+
+
+
+3) Packages Installation
+
+dnf list → list available repoitory
+dnf search “service”
+dnf install → install repo
+dnf group →redhat available group
+dnf grouplist
+dnf groupinstall	
+
+4) BaseOS & AppSteam System Files
+[!] EXAM QUESTION configure YUM repos with the given link(2 repos : 1st is base and 2nd is AppStream) [!]
+BaseOS File Syntax
+vim /etc/yum.repo.d/BaseOS.repo
+
+[BaseOS]
+
+name=BaseOS
+baseurl=https://redhat/rep
+enabled=1
+gpgcheck=
+gpgkey=http://
+[!] if gpgkey= true → gpgcheck=1 else gpgcheck=0 [!]
+
+AppStream File Syntax
+
+vim /etc/yum.repo.d/AppStream
+
+[AppStream]
+name=AppStream
+baseurl=https://redhat/rep
+enabled=1
+gpgcheck=
+gpgkey=http://
+[!] if gpgkey= true → gpgcheck=1 else gpgcheck=0 [!]
+
+
+[!] in exam default interface in multi-user.target [!]
+To change interface to graphic
+	→ systemctl isolate graphical.target
+
+5) Profiling : 
+
+tuned-adm recommend → to list recommended profile
+tuned-adm profile profile_name → to change profile to profile_name
+systemctl enable --now tuned
+systemctl restart tuned
+
+Exam Scenario : 
+Configurez le profil recommandé comme étant actif.
+
+tuned-adm recommend 
+Result : virtual-guest
+tuned-adm profile virtual-guest 
+To verify : tuned-adm active
+
+3) HTTP Server
+
+(A) Changing HTTP Port number :
+
+dnf install httpd
+systemctl enable --now httpd
+echo "FREE PALESTINA" >> /var/www/html/index.html
+curl localhost
+Result : FREE PALESTINA
+nano /etc/httpd/conf/httpd.conf
+Change FROM :  Listen 80 -> Listen 82
+semanage port -a -t http_port_t -p tcp 82 [!] can be found in : man semanage-port [!] 
+systemctl restart httpd
+curl localhost:82
+
+(B) Changing the default read location of the web directory : 
+mkdir /web
+touch /web/index1.html
+touch /web/index2.html
+touch /web/index3.html
+echo "FREE PALESTINA Season 1" >> /web/index1.html
+echo "FREE PALESTINA Season 2" >> /web/index2.html
+echo "FREE PALESTINA Season 3" >> /web/index3.html
+nano /etc/httpd/conf/httpd.conf 
+search for "documentRoot" and then change the default location : 
+			documentRoot 	/web
+							/web
+							/web
+man semanage fcontext 
+Search for httpd in this file and copy the following commands :
+semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
+restorecon -R -v /web
+systemctl restart httpd
+
+
+Scenario : 
+systemctl reload httpd
+echo "Free Palestina Season 1" > /var/www/html/index.html 
+curl localhost:82
+Result : Free Palestina Season 1
+nano /etc/httpd/conf/httpd.conf 
+Change as follows
+#
+DocumentRoot "/web"
+
+#
+Relax access to content within /var/www.
+#
+<Directory "/web">
+    AllowOverride None
+    Allow open access:
+    Require all granted
+</Directory>
+
+Further relax access to the default document root:
+<Directory "/web">
+    #
+
+echo "Free Palestina Sesaon 2" > /web/index.html 
+man semanage fcontext
+semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
+restorecon -R -v /web
+curl localhost:82
+systemctl restart httpd
+Result : Free Palestina Season 2
+
+
+4) Firewalling 
+
+(A) Ports : 
+firewall-cmd - -add-port=82/tcp - -permanent
+firewall-cmd - -reload
+firewall-cmd - -list-ports | grep http
+Result : 82/tcp
+
+(B) Services : 
+firewall-cmd - -add-service=http - -permanent
+firewall-cmd - -reload
+firewall-cmd - -list-services
+Result : cockpit dhcpv6-client http ssh
+
+Exam Scenario : Add the service nfs  to your firewall configuration
+firewall-cmd - -add-service=nfs - -permanent
+firewall-cmd - -reload
+
+
+5) SSH Client/Server :
+Note : in our scenario, we created 2 different VMs 
+Machine 1 : Hostname=Client ; IP_Addr=192.168.241.128
+Machine 2 : Hostname=Server ; IP_Addr=192.168.241.130
+
+
+
+(A) Client Side : 
+nano /etc/hosts 
+Add this line : 192.168.241.130       server.example.com      ssh_server
+ping ssh_server
+Result : 64 bytes from server.example.com (192.168.241.130): icmp_seq=1 ttl=64 time=1.40 ms
+ssh-keygen
+enter
+enter
+ssh-copy-id ssh_server
+yes
+(Enter Root Password Once)
+
+
+(B) Server Side :
+systemctl enable --now sshd
+nano /etc/ssh/sshd_config :
+Uncomment this line : 
+Port 22 
+semanage port -a -t ssh_port_t -p tcp 22
+systemctl restart sshd
+
+
+(C) Testing : 
+	- Client Side :
+ssh ssh_server 
+// Connected without Entering Password //
+cd Desktop/
+touch fileCreatedFromRemoteMachine
+
+	- Server Side :
+ls Desktop 
+Result : fileCreatedFromRemoteMachine
+
+
+#Change SSH port
+nano /etc/ssh/sshd_config
+port 22 → 8899
+man semanage-port
+semanage port -a -t ssh_port_t -p tcp 8899 [!] can be found in : man semanage-port [!] 
+systemctl restart sshd
+
+
+6) SCP & SFTP : 
+
+6.1 SCP : 
+(A) Client Side : 
+scp fileToTransfer root@server:/$PATH
+
+(B) Server Side : 
+pwd
+Result : /root/Desktop = $PATH
+(Copy Path)
+
+
+6.2 SFTP :
+sftp user@server
+sftp> ?
+
+
+6) Network Time Protocol (NTP)
+
+timedatectl list-timezones → list timezones
+timedatectl status → liste time status
+timedatectl set-timezone → to change timezone
+
+CASE 1 : pool
+nano /etc/chronyd.conf
+pool poolname iburst
+ 
+OR
+
+CASE 2 : NTP server
+server domain1.example.com iburst
+systemctl restart chronyd
+chronyc sources
+
+
+Exam Scenario : Configure NTP service, Synchronize the server time, NTP server: classroom.example.com
+
+Yum -y install chrony
+nano /etc/chrony.conf
+Comment this line : #pool 2.rhel.pool.ntp.org iburst
+Add this line : server classroom.example.com iburst
+systemctl enable chronyd
+systemctl restart chronyd
+
+To Verify : chronyc sources
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 5 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+1) Network File Sharing (NFS)
+
+(A) Client Side : 
+
+dnf install nfs-utils
+nano /etc/hosts
+	add this line : 192.168.241.130		nfsserver
+ping nfsserver
+systemctl enable --now nfs-server
+for i in nfs  mountd rpc-bind; do firewall-cmd --add-service=$i --permanent; done	
+firewall-cmd - -reload
+showmount -e nfsserver
+++++++++++++++++++++++++++++++++++++++++++++++++++
++ Result : 									     +
++ [root@Client student]showmount -e nfsserver    +
++ Export list for nfsserver:					 +	
++ /root/share/testFile1 * 					     +
+++++++++++++++++++++++++++++++++++++++++++++++++++
+mount nfsserver:/root/share/testFile1 /home/student
+cd /home/student
+cat testFile1
+Result : 
+Viva Palestina ! 
+
+(B) Server Side : 
+
+dnf install nfs*
+systemctl enable --now nfs-server
+for i in nfs  mountd rpc-bind; do firewall-cmd --add-service=$i --permanent; done	
+firewall-cmd --reload
+mkdir /root/share/
+touch testFile1
+echo "Viva Palestina ! " >> /root/share/testFile1 
+nano /etc/exports
+Add this line : /root/share/testFile1    *(rw,no_root_squash)
+exportfs -avr
+systemctl restart --now nfs-server
+
+
+2) Automatic File Sharing (AutoFS)
+
+
+(A) Client Side : 
+dnf install nfs* autofs
+systemctl enable --now autofs nfs-server
+nano /etc/hosts
+		192.168.241.145         autofs_server
+useradd -M -d /remote_users/remote1/ -u 1053 remote1
+passwd remote1 
+nano /etc/auto.master
+		/remote_users    /etc/auto.remote1
+nano /etc/auto.remote1
+		remote1 	-rw     autofs_server:/home/remote1
+systemctl restart --now autofs nfs-server
+showmount -e autofs_server
+Result : 
+Export list for autofs_server:
+/home/remote1 *
+
+
+(B) Server Side : 
+dnf install nfs* 
+systemctl enable --now nfs-server
+useradd -b /home -u 4100 remote1
+passwd remote1
+nano /etc/exports
+add this line : /home/remote1                   *(rw,no_root_squash)
+firewall-cmd --add-service={rpc-bind,mountd,nfs} --permanent
+firewall-cmd --reload
+systemctl restart --now nfs-server.service
+exportfs -avr
+Result : exporting *:/home/remote1
+
+
+
+
+Exam Scenario 1 : Un partage NFS a été effectué depuis le serveur : 
+1) Configurez autofs pour monter automatiquement le home de l’utilisateur user20.
+2) Le répertoire de base de user20 sur le serveur nfs est : /home.
+3) Le répertoire de base de user20 sur le client nfs est : /clienthome. 
+
+nano /etc/auto.master
+Add this line : /clienthome		/etc/auto.user20
+nano /etc/auto.user20
+user20	-rw	serveur:/home/user20
+systemctl restart autofs
+su - user20
+
+
+Exam Scenario 2 :
+
+Part 1 : Un partage NFS a été effectué depuis le serveur nfsserver:/remote/user10.
+
+Server Machine : (node1) {Works with nfs-server.service}
+mkdir remote
+useradd -M -d /remote/user10 -u 1500 user10 
+passwd user10 
+nano /etc/exports : 
+		/remote/user10    *(rw,no_root_squash)
+exportfs -avr
+firewall-cmd --add-service=rpc-bind --permanent
+firewall-cmd --add-service=mountd --permanent
+firewall-cmd --add-service=nfs --permanent
+firewall-cmd --reload
+systemctl enable nfs-server.service
+systemctl restart nfs-server.service
+
+
+Part 2 : Configurez ce partage pour que son répertoire personnel soit monté automatiquement sous /clienthome.
+--> /clienthome/remoteuser1 = auto.master {/clienthome}
+							 auto.user10 {remoteuser1}
+
+
+Client Machine : (node2) { Works with autofs }
+nano /etc/hosts
+		192.168.10.10 		nfsserver
+systemctl enable --now autofs nfs-server 
+useradd -u 1500 -M -d /clienthome/remoteuser1 user10 
+passwd user10 
+nano /etc/auto.master
+		/clienthome/	/etc/auto.user10
+nano /etc/auto.user10
+		remoteuser1		-rw		nfsserver:/home/user10
+systemctl restart autofs nfs-server
+showmount -e nfsserver
+Export list for nfsserver:
+/home/remoteuser1 *
+
+
+Testing : 
+Step 1 : File Creation in client machine : 
+In client machine  : 
+1) su - remoteuser1
+2) pwd
+3) touch File1
+Step 2 : Finding the same file in the NFS Server
+In Server Machine : 
+0) showmount -e
+1) su - remoteuser1
+2) pwd
+3) ls
+--> Result : File1 
+
+
+
+
+3) Scheduling Tasks
+
+(A) Crontab :
+Crontab → execute a command every specific time
+vim /etc/crontab → how to use crontab
+crontab -e → use crontab 
+* * * * *  user_name  command to execute
+crontab -e [-u user] 
+crontab -l → list user’s crontab
+crontab -r → delete crontab
+[PS: Specifying a user requires root access]
+[PS: Not Specifying a user will modify the crontab of the current user]
+Relevant Files:
+/etc/cron.deny: black list of users denying of using cron service.
+/etc/cron.allow: White list of users only they are allowed to use cron.
+
+Exam Scenario 1: User mary must configure a task.
+Requirement: The local time at 14:23 every day echo "Hello World.". 
+
+crontab -u mary -e
+23     14     *     *     * echo "Hello World."
+crontab -l (Verify)
+
+Exam Scenario 2: Configure a task: plan to run echo hello command at 14:23 every day.
+
+which echo
+crontab -e
+23     14     *     *     * /bin/echo hello
+crontab -l (Verify)
+
+Exam Scenario 3: Exécuter le script backup.sh chaque redémarrage du système :
+crontab -e
+@reboot    chmod +x  script.sh ; ./script.sh
+crontab -l (Verify)
+
+Exam Scenario 4: Exécuter le script backup.sh de 07h00  à 14h00  tous les jours de travail (ouvrables) :
+0     7-14     *     *    1-5     bash backup.sh
+crontab -l (Verify)
+
+Exam scenario 5: Sauvegarder le message hello dans le fichier hello.txt à 14h15 et 
+17h30 chaque lundi du mois février
+crontab -e 
+15     14     *     2     1 echo "hello" >> hello.txt
+30     17     *     2     1 echo "hello" >> hello.txt
+crontab -l (Verify)
+
+Exam scenario 6: Afficher le message « tekup » en 2 minutes avant minuit de 
+chaque weekday (jours de travail)
+crontab -e 
+58     23     *     *     1-5 echo "tekup"
+crontab -l (Verify)
+
+
+(B) AT :
+At →execute command in a specific time (one time)
+man at → for details
+at specified_date
+at> command to execute
+ctrl+d → save and quit
+atq → list
+atrm at_number → remove at
+Relevant Files:
+/etc/at.allow
+/etc/at.deny
+[PS: Same functioning as cron.allow & cron.deny]
+
+Exam Scenario 1 : nettoyer /tmp à 9am en 02 juin dans une file g
+At -q g 9:00 02.06.2024
+Rm -rf   /tmp/*
+
+Exam Scenario 2 : Executer backup.sh minuit
+at 00:00
+bash backup.sh
+
+OR
+
+at midnight
+bash backup.sh
+
+
+
+4) System Logging : (System-journald)
+man journald.conf → check the man page 
+systemctl status systemd-journald → Check journald service status
+By default, the systemd-journald daemon is not persistent across reboots (it store the logs in /run/log/journal)
+→ To make it persistent, you have two options:
+1. Create a directory /var/log/journal.
+2. Change the configuration file /etc/systemd/journald.conf, and set the Storage option to persistent.
+
+journalctl -b -u sshd -u httpd --since "2019-01-01 00:00:00" --until "2019-01-02 00:00:00" → Show the logs from the current boot for the sshd and httpd services between the specified dates
+
+
+5) Priority and Niceness : (Nice command) 
+Niceness is a value from -20 to 19
+The lower the number, the higher the priority
+The default priority is 0
+The nice command can be used to start a process with a specific
+priority/niceness
+nice -n [Niceness_Value] [COMMAND]
+The renice command can be used to change the priority of a
+running process
+renice -n [New_Niceness_Value] [PID]
+Only root can start a command with a negative niceness
+Only root can increase the priority of a process (decrease the
+niceness)
+
+6) Process Management :
+
+There are three types of processes:
+→ Foreground processes: a running process that is bound to a
+terminal.
+→ Background processes: a running process that is not taking
+control of the terminal that started it.
+→ Daemons: processes that are started by the system and run
+continuously.
+Run a command as a background process: (add & at the end of the
+command)
+$ command &
+Change a process from foreground to background:
+$ sleep 100
+CTRL + z # Now that process is paused
+$ bg # Continue the process in the background
+$ fg # To get the process back in the foreground
+To display background processes, use the command “jobs”:
+Example:
+$ jobs
+[1]+ Stopped sleep 20
+[2]- Running sleep 20 &
+Send Signals to a process using the “kill” command:
+→ kill -l : List all signals with their IDs.
+→ kill -s [Signal] [PID]
+[PS: Default signal is 15 (SIGTERM)]
+→ killall -s [Signal] [ProcessGroup]
+Example: killall -s 9 top # Kills all currently running top commands.
+When a terminal process is killed while it has background processes running,
+they become daemons: Children Processes of systemd process.
+Display Processes using the “ps” command
+Follow real time the resource usage using the “top” command
+
+7) SELinux : (Security Enforced Linux)
+semanage: Change the SELinux context of a file permanently. (More
+in the man page man semanage-fcontext
+ semanage fcontext -m -t type file
+→ restorecon -v file
+Check the SELinux context of a port with the following command:
+→ semanage port -l | grep port
+Change the SELinux context of a port with the following command:
+→ semanage port -m -t type -p protocol port
+
+
+Exam Scenario : SELinux must run in force mode.
+
+nano /etc/selinux/config
+SELINUX=enforcing
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 6 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+1) Storage Management : ext3/ ext4 / xfs / swap
+Primary Disk 1 : (Size=1G ; Disk Type : xfs)
+fdisk /dev/sda
+n
+p
+enter
+enter
++1G
+w
+mkfs.xfs /dev/sda1
+blkid 
+echo "UUID=43f3f811-29ee-4792-849b-86255abb8814" >> /etc/fstab
+mkdir /mountpoint1
+nano /etc/fstab
+UUID=43f3f811-29ee-4792-849b-86255abb8814       /mountpoint1    xfs     defaults        0 0
+save
+mount -a
+
+Primary Disk 2 : (Size=2G)
+n
+p
+enter
+enter
++2G
+w
+Extended Disk 3 : (Size=3G ; Disk Type : SWAP)
+n
+e
+enter
+enter
++3G
+t
+swap
+w
+mkswap /dev/sda3
+swapon /dev/sda3
+blkid /dev/sda3 
+echo UUID="cdf199fd-6fa0-4426-99be-2006ee5751c8" >> /etc/fstab
+nano /etc/fstab 
+save
+mount -a
+
+
+
+
+2) LVM : 
+Order of Creation : pvcreate ; vgcreate ; lvcreate under an extended partition
+pvcreate /dev/sdb pv1
+vgcreate vg1 pv1
+lvcreate -n lv1 -L +1G vg1
+mkfs.ext4 /dev/vg1/lv1
+mkdir /mountpointLVM
+blkid /dev/vg1/lv1
+echo "UUID="f17ae669-f34f-448e-ad4d-746ed32fb1b0"" >> /etc/fstab
+UUID=f17ae669-f34f-448e-ad4d-746ed32fb1b0       /mountpointLVM  ext4   defaults        0 0
+save
+mount -a
+lv
+
+Resizing : 
+(A) : Removing 100M | Adding 100M
+umount /dev/vg1/lv1
+lvresize -r -L -100M /dev/vg1/lv1 
+lvresize -r -L +100M /dev/vg1/lv1
+
+
+(B) : Adding 20 extends 
+lvresize -r -l +20 /dev/vg1/lv1
+
+
+3) Stratis : 
+dnf install stratisd stratis-cli
+systemctl enable --now stratisd
+
+
+stratis pool mypool /dev/sdc
+startis pool add-data mypool /dev/sdd 
+stratis fs create mypool fs1
+mkdir /fileSystemmp
+stratis fs list -→ /dev/stratis/mypool/fs1
+blkid /dev/stratis/mypool/fs1
+echo "UUID=	  " >> /etc/fstab
+nano /etc/fstab
+UUID=		 /fileSystemmp xfs  x-systemd.requires=stratisd.service 0 0 
+save
+mount -a
+
+
+4) Stratis Snapshots :
+stratis fs  snapshot mypool fs1 snapshot_name
+stratis fs list
+blkid snapshot_name
+umount fs_name mount_point
+delete line from /etc/fstab
+change fs uuid to snapshot uuid and fs mountpoint to snapshot mountpoint
+mount -a
+
+5) REMOVE FS IN STRATIS : 
+umount fs mountpoint
+stratis fs destroy pool_name fs_name
+stratis pool destroy pool_name
+mount -a
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 7 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+1) Bash Scripting
+(A) Script: "replace.sh"
+This script takes a file name (f) and a directory name (d) as parameters. It replaces the contents of each file in the specified directory with the contents of the provided file and counts the number of files and directories.
+
+#!/bin/bash
+
+# Get the current working directory
+workd=$(pwd)
+
+# Prompt the user for the file and directory names
+read -p "Enter your file name: " f
+read -p "Enter your directory name: " d
+
+# Check if the file does not exist
+if [ ! -f $f ]; then
+  echo "$f not found"
+# Check if the directory does not exist
+elif [ ! -d $d ]; then
+  echo "$d not found"
+else
+  # List all files in the current directory
+  lists=$(ls -l | awk '{print $9}')
+
+  # Loop through each file in the directory
+  for i in $lists; do
+    # Replace the contents of each file with the contents of the provided file
+    cat $f > $i 2>/dev/null
+  done
+
+  # Display the number of files and directories in the current directory
+  echo "Number of files in $workd is $(ls -l | grep '^-' | wc -l)"
+  echo "Number of directories in $workd is $(ls -l | grep '^d' | wc -l)"
+fi
+
+Explanation:
+The script first gets the current working directory using $(pwd).
+It then prompts the user for the file and directory names using read.
+It checks if the provided file and directory exist using [ ! -f $f ] and [ ! -d $d ].
+If both the file and directory exist, it uses ls -l and awk to get a list of files in the current directory.
+It then uses a for loop to iterate through each file and replaces its contents with the contents of the provided file using cat $f > $i 2>/dev/null.
+Finally, it displays the number of files and directories in the current directory using ls -l, grep, and wc.
+$# → arguments number / $* → list all arguments
+
+
+
+(B) Script: "exam.sh"
+This script takes an argument and outputs whether the argument is "rhcsa8" or "rhcsa7".
+
+#!/bin/bash
+
+# Check if the argument is "rhcsa8"
+if [[ "$1" == "rhcsa8" ]]; then
+  echo "Yes, is valid."
+# Check if the argument is "rhcsa7"
+elif [[ "$1" == "rhcsa7" ]]; then
+  echo "No, isn't valid."
+# Display usage if the argument is neither "rhcsa8" nor "rhcsa7"
+else
+  echo "Usage: ./exam.sh rhcsa8|rhcsa7"
+fi
+Explanation:
+The script uses [[ ... ]] for conditional tests.
+It checks if the argument is "rhcsa8" using [[ "$1" == "rhcsa8" ]] and outputs "Yes, is valid."
+It checks if the argument is "rhcsa7" using [[ "$1" == "rhcsa7" ]] and outputs "No, isn't valid."
+If the argument is neither "rhcsa8" nor "rhcsa7," it displays a usage message.
+I hope this helps clarify the functionality of the scripts! If you have specific questions about any part of the scripts, feel free to ask.
+
+
+
+(C) exam.sh script:
+
+#!/bin/bash
+if [[ "$1" == "rhcsa8" ]]; then
+  echo "Yes, is valid."
+elif [[ "$1" == "rhcsa7" ]]; then
+  echo "No, isn't valid."
+else
+  echo "Usage: ./exam.sh rhcsa8|rhcsa7"
+fi
+Explanation:
+this script takes a command-line argument and checks whether it is "rhcsa8" or "rhcsa7". Depending on the value, it outputs a corresponding message. If the argument is neither "rhcsa8" nor "rhcsa7", it provides a usage message.
+
+
+(D) Bash Scripting Tricks
+Run shell commands:
+
+$(COMMAND) OR `COMMAND`
+Empty a file:
+
+
+> file
+String test in if:
+
+
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
+Transform parameter into a string:
+
+
+if [ "$1" == "" ]; then
+
+
+(E) Useful Variables:
+
+$0 → File name
+$1, $2, ... → Arguments
+$# → Number of arguments
+$* → List of all arguments
+
+
+
+(F) Executing a script:
+
+chmod +x script.sh
+./script.sh
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+PART 8 :                                                                                                                                      |
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+1) Rootless Containers :
+
+useradd moudir
+passwd moudir
+loginctl enable-linger moudir
+ssh moudir@localhost
+podman login registry.redhat.io
+nano myApp.py
+cat myApp.py 
+print("Container Testing App !")
+nano Dockerfile ( [!] D Must be UPPERCASE [!] )
+cat Dockerfile 
+FROM python:3.8-alpine
+COPY myApp.py /myApp.py
+CMD ["python", "/myApp.py"]
+
+# Build a container image from the current directory.
+podman build -t my_python_image .    		
+# Runs the container as a daemonized process							  
+podman run -d --name mycontainer -p 8080:80 my_python_image   
+
+This command runs 
+ -> the container in the background (-d);
+ -> Gives it the name (--name mycontainer);
+ -> Maps port 8082 on the HOST machine to port 80 inside the container (-p 8082:80).
+
+mkdir -p ~/.config/systemd/user
+cd ~/.config/systemd/user
+# Generate systemd service files for the container
+podman generate systemd --name mycontainer --new --files     			 
+nano container-mycontainer.service
+		[service]
+			restart=on-failure ⇒ restart=always
+			RestartSec=2s
+			StartLimitBurst=300000
+		[install]
+			WantedBy=default.target multi-user.target
+systemctl --user daemon-reload               							  
+systemctl --user enable --now container-mycontainer.service               
+
+
+podman ps
+Result : 
+CONTAINER ID  IMAGE                             COMMAND           CREATED                 STATUS       PORTS                 NAMES
+3e5408302af9  localhost/my_python_image:latest  python /myApp.py  Less than a second ago  Up 1 second  0.0.0.0:8080->80/tcp  mycontainer
+
+
+
+Exam Scenario : 
+# Pull the Apache web server container image (httpd 2.4) from the Red Hat Container Registry
+podman pull registry.redhat.io/rhel8/httpd-24
+
+# Create a directory for your HTML files
+mkdir -p /var/html/
+
+# Create a simple HTML file
+echo "<html><body><h1>Hello, Apache!</h1></body></html>" > /var/html/index.html
+
+# Run the Apache container, mapping port 8080 on the host to port 80 in the container,
+# and mount the /var/html directory into the container's /usr/local/apache2/htdocs directory
+podman run -d --name my-apache-container -p 8080:80 -v /var/html/:/usr/local/apache2/htdocs registry.redhat.io/rhel8/httpd-24
+
+
+podman login registry.redhat.io
+podman pull httpd-24
+podman images
+podman build -t httpdimage .
+Result :
+Storing signatures
+5b013cb69006e7f9b7d0f9e253106331ff49d180765a713858fc6ad9289c4fec
+podman images
+
+Result : 
+REPOSITORY                         TAG         IMAGE ID      CREATED       SIZE MB
+registry.redhat.io/rhel8/httpd-24  1           5b013cb69006  3 weeks ago   454 MB
+
+podman run -d --name myHttpContainer -p 8051:86 5b013cb69006
+f53b03a1774a72a56572132ce4ac779171bf627be14dc9471711d54e93505456
+podman ps
+CONTAINER ID  IMAGE                                COMMAND               CREATED         STATUS         PORTS                 NAMES
+f53b03a1774a  registry.redhat.io/rhel8/httpd-24:1  /usr/bin/run-http...  26 seconds ago  Up 26 seconds  0.0.0.0:8051->86/tcp  myHttpContainer
+mkdir -p .config/systemd/user/
+cd .config/systemd/user/
+podman generate systemd --name myHttpContainer --new --files
+Result : 
+/home/moudir/.config/systemd/user/container-myHttpContainer.service
+nano container-myHttpContainer.service 
+Content : 
+
+[Service]
+Restart=always
+RestartSec=2s
+StartLimitBurst=3000000
+
+[Install]
+WantedBy=default.target multi-user.target
+
+
+systemctl --user daemon-reload 
+systemctl --user enable --now container-myHttpContainer.service
+exit
+firewall-cmd --add-port=8051/tcp --permanent 
+firewall-cmd --reload 
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+Part X : TroubleMakers                                                                                                                        |
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Question (1) : 
+Sur votre serveur, le service httpd a été configuré pour utiliser NFS mais la configuration ne fonctionnera pas à cause de la politique SELinux. Corrigez cette situation en activant le booléen "httpd_use_nfs" et rendez-le persistant lors du redémarrage (même il est bien configuré, exécuter les commandes nécessaires pour répondre à la question).
+
+getsebool -a | grep httpd_use_nfs
+Result : httpd_use_nfs --> off
+man semanage boolean 
+Copy this line : semanage boolean -m --on httpd_can_sendmail
+semanage boolean --list | grep httpd
+copy this variable : httpd_use_nfs
+semanage boolean -m --on httpd_use_nfs 
+semanage boolean --list | grep httpd
+Result : httpd_use_nfs                  (on   ,   on)  Allow httpd to use nfs
+Reboot to verify 
+
+
+Question (2) :
+FR : Activer le transfer de paquets sur serveur1, cela devrai persister aprés le redémarrage. 
+ENG : Please open the ip_forward, and take effect permanently.
+
+sysctl -a  | grep ip.forward
+nano /etc/sysctl.conf
+Add these lines : net.ipv4.ip_forward = 1 
+sysctl -p
+Reboot to verify 
+
+
+Question (3) :
+Le répertoire /var/www/html contient 03 fichiers (test1, test2, test3) contenant chacun la phrase «Examen EX200». Configurez le serveur web de sorte qu’il puisse exploiter le contenu provenant de ces fichiers. (Ne pas modifier le contenu de ces fichiers). 
+Le serveur web démarre automatiquement au redémarrage du système.
+
+
+nano /etc/httpd/conf/httpd.conf 
+man semanage port 
+semanage port -a -t http_port_t -p tcp 82
+man semanage fcontext 
+Copy these 2 line : 
+semanage fcontext -a -t httpd_sys_content_t "/var/www/html(/.*)?"
+restorecon -Rv /var/www/html/
+
+touch /var/www/html/f{1..3}
+echo "Viva Palestina Season 1" >> /var/www/html/f1
+echo "Viva Palestina Season 2" >> /var/www/html/f2
+echo "Viva Palestina Season 3" >> /var/www/html/f3
+sudo restorecon -Rv /var/www/html
+systemctl restart httpd
+
+Result : 
+[root@localhost ~]# curl localhost:82/f1
+Viva Palestina Season 1
+[root@localhost ~]# curl localhost:82/f2
+Viva Palestina Season 2
+[root@localhost ~]# curl localhost:82/f3
+Viva Palestina Season 3
+
+
+Question (4) : 
+Mettez à jour le kernel et configurez le système pour démarrer avec le noyau par défaut. Aussi, gardez l'ancien noyau disponible.
+
+nano /etc/yum.conf
+		installonly_limit=2
+dnf update kernel
+grubby --info=ALL
+grubby --set-default=<kernel_index_number>
+grub2-mkconfig -o /boot/grub2/grub.cfg
+uname -r
+
+
+QUESTION (5) :
+System1 should boot into the graphical target by default and boot messages (debug) should be present (not silenced).
+
+systemctl set-default graphical.target
+nano /etc/default/grub
+Delete "rhgb quiet" from this line : 
+GRUB_CMDLINE_LINUX="crashkernel=1G-4G:192M,4G-64G:256M,64G-:512M resume=/dev/mapper/rhel-swap rd.lvm.lv=rhel/root rd.lvm.lv=rhel/swap rhgb quiet"
+
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+
+
+
+QUESTION (6) : 
+Configure a HTTP server, which can be accessed through http://station.domain40.example.com. Please download the released page from http://ip/dir/example.html. 
+
+Machine 1 : Server
+dnf install httpd
+systemctl enable --now httpd
+systemctl restart --now httpd
+echo "IT WORKS" >> /var/www/html/example.html
+ip a | grep inet
+	COPY the machine's IP address (192.168.241.151)
+nano /etc/hosts
+	192.168.241.151         station.domain40.example.com
+semanage fcontext -a -t httpd_sys_content_t "/var/www/html/(/.*)?"
+restorecon -R -v /var/www/html
+
+Machine 2 : Client (Testing Phase)
+nano /etc/hosts
+	192.168.241.151         station.domain40.example.com
+[root@server ~]# curl http://station.domain40.example.com/example.html
+IT WORKS
+[root@server ~]# wget http://station.domain40.example.com/example.html
+--2023-12-16 16:19:29--  http://station.domain40.example.com/example.html
+Resolving station.domain40.example.com (station.domain40.example.com)... 192.168.241.151
+Connecting to station.domain40.example.com (station.domain40.example.com)|192.168.241.151|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 9 [text/html]
+Saving to: ‘example.html’
+
+example.html        100%[=================>]       9  --.-KB/s    in 0s      
+
+2023-12-16 16:19:29 (470 KB/s) - ‘example.html’ saved [9/9]
+
+[root@server ~]# ls
+anaconda-ks.cfg  Documents  example.html  j      Pictures  Templates
+Desktop          Downloads  home          Music  Public    Videos
+[root@server ~]# cat example.html 
+IT WORKS
+[root@server ~]# 
+
+
+QUESTION (7) : 
+Resize the LVM logical volume that contains the root file system and add 1 GiB. Perform all tasks necessary.
+
+Add 2GB nvme disk 
+fdisk /dev/sdb 
+pvresize /dev/sdb1
+vgextend rhel /dev/sdb1
+lvresize -r -L +1G /dev/rhel/root
+lvdisplay
+lsblk
+
+
+QUESTION (8) :
+Copy the content of /etc/passwd to the /home directory, and change /bin/bash to /sbin/login. Then save it to a new file named passwd2.
+
+cp /etc/passwd /home/
+sed 's#bin/bash#sbin/login#' passwd >> passwd2
+tail -2 passwd
+tail -2 passwd2
+
+
+
+QUESTION (9) :
+Create a Logical Volume Lvi with 60 extents Volume Group Vgi with 16MB extent 
+size. Mount it permenently under /record with file system vfat
+
+lsblk
+
+fdisk /dev/sdb
+n
+p
+Enter
++976M {61 extents × 16MB }
+t
+lvm
+p
+w
+
+pvcreate /dev/sdb1
+vgcreate -s 16M vgi /dev/sdb1
+lvcreate -n lvi -l 60 vgi
+mkfs.vfat /dev/vgi/lvi
+mkdir /record
+blkid | grep lvi
+echo "/dev/vgi/Lvi  /record  vfat  defaults  0 0" >> /etc/fstab
+mount -a
+
+
+QUESTION (10) : On a disk of size 5G, you will create a pool pool1, then create a file system fs1. Create  in “fs1” a file of size 2G named file1.txt, then create a snapshot named “snap1” for this file system. Mount snap1 and fs1 automatically on boot.
+
+
+systemctl enable stratisd
+systemctl start stratisd
+
+lsblk
+stratis pool create pool1 /dev/nvme0n3 
+stratis fs create pool1 fs1
+blkid | grep stratis
+mkdir -p /mnt/filesys1
+UUID=625b4fb6-80e2-4a50-8adf-d97290dc1d2c       /mnt/filesys1   xfs     x-systemd.requires=stratisd.service     0 0
+systemctl daemon-reload
+mount -a
+truncate -s 2G /mnt/fs1/file1.txt { In Stratis, you don't interact with the file system directly as a block device like in some other storage solutions.}
+stratis fs snapshot pool1 fs1 snap1
+stratis fs 
+nano /etc/fstab
+UUID=de60f0f1-8b25-4ef1-8e1f-0e84fcc23046       /mnt/fs1/snap1  xfs     x-systemd.requires=stratisd.service     0 0
+systemctl daemon-reload
+mount -a
+
+
+QUESTION (11) : Configure your host journal to store all journal across reboot. Copy all journal files from /var/log/journal/ and put them in the /home/shangrila/container-logserver
+nano /etc/systemd/journald.conf
+Storage=persistent
+mkdir -p /home/shangrila/container-logserver
+cp -r /var/log/journal/* /home/shangrila/container-logserver/
+
+
+QUESTION (12) : Configure a HTTP server, which can be accessed through http://station.domain40.example.com and port 83. Create an exemple.html file under /rep and make it accessible through your web server.
+
+nano /etc/hosts
+HOST_IP_@  	station.domain40.example.com 
+nano /etc/httpd/conf/httpd.conf
+Listen 83
+semanage port -a -t http_port_t -p tcp 83 
+systemctl restart httpd
+mkdir -p /rep
+touch /rep/exemple.html
+DocumentRoot "/rep"
+<Directory "/rep">
+<Directory "/rep">
+semanage fcontext -a -t httpd_sys_content_t "/rep(/.*)?"
+restorecon -R -v /rep
+systemctl start httpd
+systemctl enable httpd
+curl station.domain40.example.com:83/example.html
+
+
+QUESTION (13) : Attach the RHEL 9 ISO image to the VM and mount it persistently to /mnt/dvdrom. Define access to both repositories and confirm.
+
+Add cd-rom to the VM
+lsblk
+blkid /dev/sr*
+copy UUID & TYPE 
+echo "UUID=..." "TYPE=..." >> /etc/fstab
+mkdir -p /mnt/dvdrom
+nano /etc/fstab 
+uuid_of_/dev/sd* 	/mnt/dvdrom 	$TYPE 	ro 		0 0
+mount -a
+
+nano /etc/yum.repos.d/myrepo.repo
+[rhel-9-base]
+name=RHEL 9 Base
+baseurl=file:///mnt/dvdrom/AppStream
+enabled=1
+gpgcheck=0
+
+[rhel-9-updates]
+name=RHEL 9 Updates
+baseurl=file:///mnt/dvdrom/BaseOS
+enabled=1
+gpgcheck=0
+
+
+QUESTION (14) : Lock user account user70. Use regular expressions to capture the line that shows the lock and store the output in file /var/tmp/user70.lock.
+
+usermod -L  user70 OR passwd -l user70
+passwd -S user70 >> /var/tmp/user70.lock 
+OR 
+grep -i user70 /etc/shadow >> /var/tmp/user70.lock.
+
+
+QUESTION (15) : Set a cron job for user natasha that should run daily every 1 minute local time and exectues "Ex200 Testing" with logger.
+
+
+crontab -e -u natasha
+*/1     *       *       *       *        logger "Ex200 Testing"
+systemctl restart crond
+journalctl | grep "Ex200 Testing"
+
+
+QUESTION (16) : Install software group called "Legacy UNIX Compatibility".
+dnf groupinstall "Legacy UNIX Compatibility"
+
+
+QUESTION (17) : Add the http service to “external” firewalld zone persistently.
+firewall-cmd --zone=external --add-service=http --permanent 
+firewall-cmd --reload
+To verify : firewall-cmd --zone=external --list-services 
+
+
+QUESTION (18) : Add a user necola with uid 1212, all files created by necola will have 600 as default permissions.
+[!] All Files == Directories + Files : 777 - 600 = 177 [!]
+[!] Regular files = ONLY Files : 666 - 600 = 066 [!]
+
+nano /home/necola/.bashrc
+umask 177
+source /home/necola/.bashrc
+
+to verify : umask -S 
+
+QUESTION (19) : 
+(1) Create a user account called user70 with UID 7000 and and logs in an inactive shell , and a comment “I am user70”. 
+useradd -u 7000 -c "I am user70" -s /sbin/nologin user70
+
+
+(2) Set the maximum allowable inactivity for this user to 22 days.
+chage -I 22 user70 
+passwd -S user70
+
+
+(3) Ensure that the user is forced to change their password at next login.
+passwd -e user70
+
+(4) Lock the account for user70 and confirm the changes.
+usermod -L user70 
+grep user70 /etc/shadow
+
+(5) Remove user70 along with their home and mail spool directories
+userdel -r user70
+
+
+QUESTION (20) : 
+(1) Create a logical volume called lv1 of size equal to 10 LEs in vg1 volume group (create vg1 with PE size 8MB in a partition on the 400MB disk). Initialize the logical volume with XFS type and mount it on /mnt/lvfs1. Create a file called lv1file1 in the mount point. Set the file system to automatically mount at each system reboot.
+
+(2) Extend the file system in the logical volume lv1 by 64MB without unmounting it and without losing any data. Confirm the new size for the logical volume and the file system.
+
+(1):
+fdisk /dev/sda
+lsblk
+pvcreate /dev/sda1
+vgcreate -s 8M vg1 /dev/sda1
+lvcreate -n lv1 -l 10 vg1
+mkfs.xfs /dev/vg1/lv1 
+blkid | grep vg1
+mkdir -p /mnt/lvfs1
+nano /etc/fstab
+		UUID="cf0f08b7-82cc-4db5-94c6-4345f1c1722e"     /mnt/lvfs1      xfs     defaults        0 0
+mount -a
+touch /mnt/lvfs1/lv1file1
+
+(2):
+pvcreate /dev/sda2
+vgextend vg1 /dev/sda2
+lvextend -r -L +64M /dev/vgi/lvi
+
+
+QUESTION (21) : 
+Set up a cron job for user70 to search for files by the name “core” in the /var directory and copy them to the directory /var/tmp/coredir1. This job should run every Monday at 1:20 a.m 
+
+crontab -e -u user70
+20  1  *  *  mon  find /var -name core -exec cp -a {} /var/tmp/coredir1 \;
+
+
+QUESTION (22) : Select the multi-user target as your default target
+
+systemctl get-default
+systemctl set-default multi-user.target
+
+IN THE EXAM USE : systemctl isolate multi-user.target (NOT PERMANENT)
+
+
+QUESTION (23) :  On your first machine, the httpd service has been configured to use NFS but the configuration will not work because of the SELinux policy. Fix this situation by enabling the "httpd_use_nfs" boolean and make it persistent across reboot.
+
+man semanage-boolean |grep httpd
+Copy this line and mofify it : semanage boolean -m --on httpd_can_sendmail
+semanage boolean -m --on httpd_use_nfs
+ 
+To verify : getsebool -a | grep httpd_use_nfs
+
+
+
+QUESTION (24) : All passwords must contain at least one capital letter and 9 characters.
+
+nano /etc/security/pwquality.conf
+		minlen = 9
+		ucredit = -1 
+
+
+QUESTION (25) : On the second machine, create a user fabrice. Then transfer the directory logs to the second machine
+nano /etc/hosts
+@_IP_Host_2		host2.com
+mkdir /remote
+sftp fabrice@host2.com
+	stfp> cd /remote
+	stfp> get logs.tar.bz2
+	stfp> bye
+OR
+nano /etc/hosts
+@_IP_Host_2		host2.com
+mkdir /remote
+scp logs.tar.bz2 fabrice@host2.com:/remote
+
+
+QUESTION (26) : Create a user named mathias. His home directory is named /server/mathias. It will be mounted on /client/mathias with autofs when mathias connects.
+
+Host1.com : (SERVER)
+mkdir /server
+useradd -d /server/mathias -u 2222 mathias
+passwd mathias
+nano /etc/exports
+/server	*(rw,no_root_squash) 
+exportfs -avr
+firewall-cmd --add-service=rpc-bind --permanent
+firewall-cmd --add-service=nfs --permanent
+firewall-cmd --add-service=mountd --permanent
+firewall-cmd --reload
+systemctl restart --now nfs-server.service
+
+Host2.com : (CLIENT)
+mkdir /client
+useradd -M -d /client/mathias -u 2222 mathias
+passwd mathias
+nano /etc/auto.master
+		/client 	/etc/auto.mathias
+nano /etc/auto.mathias
+		mathias		-rw		host1.com:/server/mathias
+systemctl restart --now autofs nfs-server
+showmount -e host1.com
+
+
+QUESTION (27) : Configure the container with systemd services by an existing user “fabrice”, Service name should be container-logserver, and configure it to start automatically across reboot.
+
+useradd fabrice 
+loginctl enable-linger fabrice
+ssh fabrice@localhost
+podman login registry.redhat.io
+podman pull docker.io/jumanjiman/rsyslog
+podman images 
+podman run -dt --name logserver IMAGE_ID
+podman ps
+mkdir ~/.config/systemd/user
+mkdir -p ~/.config/systemd/user
+cd ~/.config/systemd/user
+podman generate systemd --name logserver --new --files
+nano container-logserver.service
+change these lines :
+				Restart=always
+				RestartSec=2s
+				StartLimitBurst=300000
+systemctl --user daemon-reload
+systemctl --user enable --now container-logserver.service
+systemctl --user restart --now container-logserver.service
+systemctl --user status container-logserver.service
+
+
+QUESTION (27') : Copy all *.journal from /var/log/journal and all subdirectories to /home/fabrice/container_logserver.  
+Configure automount /var/log/journal from logserver (container) to /home/fabrice/container_logserver when container starts.
+
+mkdir /home/fabrice/container_logserver
+cp -a /var/log/journal/*.journal /home/fabrice/container_logserver
+chown fabrice:fabrice /home/fabrice/container_logserver
+ssh fabrice@localhost
+podman login registry.redhat.io
+podman images 
+podman run -dt --name logserver -v /home/fabrice/container_logserver:/var/log/journal:Z IMAGE_ID
+podman ps
+
+
+QUESTION(28) : Make necessary configurations so that httpd runs on port 93 using /tekup as its documentRoot.
+
+nano /etc/hosts
+	IP_@	host2.com
+nano /etc/httpd/conf/httpd.conf
+			listen 93
+			DocumentRoot "/tekup"
+			/tekup
+			/tekup
+systemctl restart httpd
+semanage port -a -t http_port_t -p tcp 93
+firewall-cmd - -add-service=httpd - -permanent
+firewall-cmd - -add-port=93/tcp - -permanent
+semanage fcontext -a -t httpd_sys_content_t "/tekup(/.*)?"
+restorecon -R -v /tekup
+curl host2.com:93
+
+QUESTION (29) : Create a file named /tekup/shells containing the list of shells extracted from /etc/passwd. Test the access to this file from the web server.
+
+cut -d : -f 7 /etc/passwd >> /tekup/shells
+curl host2.com:93/tekup/shells
+
+
+QUESTION (30) : Create a logical Volume and mount it permanently. 
+	● Create the logical volume with the name "lv" by using 30PE's from the volume group "group". 
+    ● Consider each PE size of the volume group as "32 MB". 
+    ● Mount it on /lv with file system vfat.
+
+Add new disk partition : sdb , 2G to be able to extend in a later stage.
+fdisk /dev/sdb
+n, p, enter, enter, +992M, t, enter, lvm (8E), wq (992=PE_Size x PE_number + PE_Meta_Data)
+pvcreate /dev/sdb1
+vgcreate group -s 32M /dev/sdb1
+lvcreate -l 30 -n lv group 
+mkfs.vfat /dev/group/lv
+blkid  | grep group
+mkdir /lv
+echo "UUID=---- 	/lv		vfat	defaults 0 0"  >> /etc/fstab
+mount -a
+
+
+QUESTION (30') : Resize the logical volume "lv" so that after reboot the size should be in between 1270 M and 1290M.
+
+[!] NEW_VG_SIZE = 1290M -960M = 330M + 32M = 362M (32M PE for metadata)[!]
+fdisk /dev/sdb
+n, p, enter, enter, +362M, t, enter, lvm (8E), wq
+pvcreate /dev/sdb2
+vgextend group /dev/sdb2
+lvextend -r -L +330M /dev/group/lv 
+
+
+QUESTION (31) : Copy /etc/fstab file to /var/tmp/fstab. Configure the permissions as follow : 
+The file /var/tmp/fstab is owned by root and root group.
+The file /var/tmp/fstab should not be executed by anyone.
+User Natasha is able to read and write the file /var/tmp/fstab.
+User Sara can neither read nor write the file /var/tmp/fstab.
+Note : All cother users (current or future) have the ability to read /var/tmp/fstab.
+
+
+cp /etc/fstab /var/tmp
+ll /var/tmp/fstab
+setfacl -m u:natasha:rw- /var/tmp/fstab
+setfacl -m u:sara:--- /var/tmp/fstab
+getfacl /var/tmp/fstab
+chmod 644 /var/tmp/fstab OR chmod o=r-- /var/tmp/fstab
+
+
+QUESTION (32) : Create a user named anna on the two machines with uid 5003. Her home directory on the server is named /node1/anna. 
+It will be mounted on /node2/anna with autofs when anna connects.
+
+Server Machine : /node1/anna
+Client Machine : /node2/anna
+
+Server Machine : [IP_@ = 192.168.241.141]
+dnf install nfs-utils 
+systemctl enable --now nfs-server.service
+firewall-cmd --add-service=rpc-bind --permanent
+firewall-cmd --add-service=mountd --permanent
+firewall-cmd --add-service=nfs --permanent
+firewall-cmd --reload
+
+mkdir /node1
+useradd -d /node1/anna -u 5003 anna
+nano /etc/exports
+		/node1/anna    *(rw,no_root_squash)
+exportfs -avr
+systemctl restart --now nfs-server.service
+firewall-cmd --reload
+
+
+Client Machine : 
+dnf install autofs nfs*
+systemctl enable --now autofs nfs-server 
+useradd -M -d /node2/anna -u 5003 anna
+nano /etc/auto.master
+		/node2  /etc/auto.anna
+nano /etc/auto.anna
+		anna   -rw     192.168.241.141:/node1/anna
+systemctl restart autofs nfs-server
+showmount -e 192.168.241.141
+
+
+QUESTION (33) : Configuring autofs: Server (host1) and client (host2):
+		Configure autofs to automatically mount the home of user remoteuser1.
+		The home directory of remoteuser1 on the nfs server is: /home.
+		The home directory of remoteuser1 on the nfs client is: /clienthome.
+This configuration will be the same for all others users [remoteuser2….remoteuser10].
+
+Server Machine : /home/remoteuser1
+Client Machine : /clienthome/remoteuser1
+
+
+Server Machine : [IP_@ = 192.168.241.141]
+dnf install nfs* 
+systemctl enable --now nfs-server.service
+firewall-cmd --add-service=rpc-bind --permanent
+firewall-cmd --add-service=mountd --permanent
+firewall-cmd --add-service=nfs --permanent
+firewall-cmd --reload
+useradd -d /home/remoteuser1 -u 5003 remoteuser1
+nano /etc/exports
+		 /home   *(rw,no_root_squash)
+exportfs -avr
+systemctl restart --now nfs-server.service 
+firewall-cmd --reload
+
+
+Client Machine : 
+dnf install nfs* autofs
+systemctl enable --now autofs nfs-server
+useradd -M -d /clienthome/remoteuser1 -u 5003 remoteuser1
+nano /etc/auto.master
+		/clienthome  /etc/auto.remoteusers
+nano /etc/auto.remoteusers
+		*			-rw     192.168.241.141:/home/&
+systemctl restart autofs nfs-server
+showmount -e 192.168.241
+
+
+QUESTION (34) : Ecrire un script shell script1.sh qui recherche, sous /usr, suivant le groupe propriétaire  (suivant chaque GID indiqué dans /etc/group) tous les fichiers de taille inférieur à 10M , puis les copiez dans /root/files1
+
+#!/bin/bash
+for i in $(cat /etc/group | cut -d : -f 3);
+do
+find /usr/ -gid "$i" -size -10M -exec cp -a {} /root/files1 \;
+done
+
+
+QUESTION (35) : Ecrire un script nommé script2.sh qui recherche, dans /usr/bin, tous les fichiers qui sont de taille plus petite que 50K et plus grande que 30K et qui ont des privilèges du  propriétaire, copiez le résultat dans /root/files2.
+
+#!/bin/bash
+find /usr/bin/ -size -50k -size +30k -perm 4000 -exec cp -a {} /root/files2 \;
+
+
+QUESTION (36) : Réglez le contexte Selinux du port 2332 sur xen_port_t à l'aide du protocole tcp. Ajustez SELinux pour qu'il s'exécute en mode permissive et configurez votre firewall pour rejeter toutes les connexions/flux de trafic du serveur
+
+semanage port -a -t xen_port_t -p tcp 2332
+nano /etc/selinux/config
+SELINUX=permissive
+sudo firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source address="@_IP_Server" reject' --permanent
+
+
+QUESTION (37) : Sur un disque de 7G, créez un nouveau volume logique nommé « qa » de taille 256LE ; le groupe de ce volume est nommé « qagroup » et la taille de son PE= 16M. Puis, le formaté en xfs et le monter automatiquement lors de démarrage.
+
+
+( 256 x 16 )+ 16 = 4112M
+lsblk
+fdisk /dev/sdb {n,p,1,enter,+4112M,t,lvm}
+pvcreate /dev/sdb1
+vgcreate -s 16M qagroup /dev/sdb1
+lvcreate -l 256 --name qa qagroup
+mkfs.xfs /dev/qagroup/qa
+blkid /dev/qagroup/qa
+mkdir /mnt/qa
+		UUID=2daf303c-6877-40a2-a9fa-1fae40ae3750       /mnt/qa         xfs     defaults        0 0
+systemctl daemon-reload 
+mount -a
+
+
+QUESTION (38) : En tant que root, planifiez une tache qui supprime le contenu du fichier /tmp le 27/08/2022 à 16h30.
+
+at -t 202208271630 // at -t 16:30 08/27/2022
+											at> rm -rf /tmp/*
+											at>CNTRL+D
+at>rm -rf /tmp/*
+cntrl+d to save
+at> <EOT>
+job 1 at Sat Aug 27 16:30:00 2022
+
+
+QUESTION (39) : Configure repos AppStream and BaseOS : 
+AppStream link : centos.anexia.at/centos-stream/9-stream/AppStream/x86_64/os/ 
+BaseOS Link : centos.anexia.at/centos-stream/9-stream/BaseOS/x86_64/os/
+
+nano /etc/yum.repos.d/AppStream.repo
+	[AppStream]
+	name=CentOS Stream $releasever - AppStream
+	baseurl=http://centos.anexia.at/centos-stream/9-stream/AppStream/x86_64/os/
+	gpgcheck=1
+	enabled=1
+	gpgkey=http://centos.anexia.at/centos-stream/9-stream/RPM-GPG-KEY-CentOS-Official
+nano /etc/yum.repos.d/BaseOS.repo
+	[BaseOS]
+	name=CentOS Stream $releasever - BaseOS
+	baseurl=http://centos.anexia.at/centos-stream/9-stream/BaseOS/x86_64/os/
+	gpgcheck=1
+	enabled=1
+	gpgkey=http://centos.anexia.at/centos-stream/9-stream/RPM-GPG-KEY-CentOS-Official
+
+To verify : yum repolist
+
+
+QUESTION (39') : Repos are available from the repo server at the following local urls for you to use during the exam :
+		/var/ftp/repo/BaseOS
+		/var/ftp/repo/AppStream
+nano /etc/yum.repos.d/BaseOS.repo
+[BaseOS]
+name=BaseOS
+baseurl=file:///var/ftp/repo/BaseOS
+enabled=1
+gpgcheck=0
+
+nano /etc/yum.repos.d/.repo
+[AppStream]
+name=AppStream
+baseurl=file:///var/ftp/repo/AppStream
+enabled=1
+gpgcheck=0
+
+[!] NOTE [!]
+Use file:// when the repository is available as a local file path.
+Use ftp:// when the repository is available via FTP and needs to be accessed remotely.
+
+
+QUESTION (40) : Golden Question #PDF-Converter#
+
+[root@client ~]# :
+useradd pod
+passwd pod
+loginctl enable-linger pod
+ssh pod@localhost
+
+
+[pod1@client ~]$ :
+wget https://raw.githubusercontent.com/sachinyadav3496/Text-To-PDF/master/pdf_converter.py
+wget https://raw.githubusercontent.com/sachinyadav3496/Text-To-PDF/master/Dockerfile
+
+
+[root@client ~]# :
+mkdir -p /data/input /data/output
+chown -R pod:pod /data/
+chown -R pod:pod /data/input /data/output
+chmod 777 /data/input /data/output
+touch /data/input/file{1..5}.txt
+echo "Hello $USER, test file 1" > /data/input/file1.txt 
+echo "Hello $USER, test file 2" > /data/input/file2.txt  
+echo "Hello $USER, test file 3" >> /data/input/file3.txt 
+echo "Hello $USER, test file 4" >> /data/input/file4.txt 
+echo "Hello $USER, test file 5" >> /data/input/file5.txt 
+chown pod:pod /data/input/*
+
+
+[pod1@client ~]$ :
+podman build -t pdf .
+podman images
+cat /data/input/file1.txt
+podman run -dt --name pdf-converter -v /data/input:/data/input:Z -v /data/output:/data/output:Z cb2e2a2bb38e
+mkdir -p ~/.config/systemd/user
+cd  ~/.config/systemd/user
+podman generate systemd --name pdf-converter --files --new
+systemctl --user daemon-reload 
+systemctl --user enable --now container-pdf-converter.service 
+systemctl --user restart --now container-pdf-converter.service 
+podman exec -it pdf-converter bash
+
+
+Testing Phase : 
+[pod@client ~]$ podman exec -it pdf-converter bash
+[root@2befe9ae19ba app]# ls -lh /data/input/
+total 20K
+-rw-r--r--. 1 root root 13 Dec 17 21:45 file1.txt
+-rw-r--r--. 1 root root 13 Dec 17 21:44 file2.txt
+-rw-r--r--. 1 root root 13 Dec 17 21:44 file3.txt
+-rw-r--r--. 1 root root 13 Dec 17 21:44 file4.txt
+-rw-r--r--. 1 root root 13 Dec 17 21:44 file5.txt
+[root@2befe9ae19ba app]# ls -lh /data/output/
+total 20K
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file1.pdf
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file2.pdf
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file3.pdf
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file4.pdf
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file5.pdf
+
+
+
+
+$Containers ALL Possible Scenarios$
+
+Scenario 1 : 
+wget https://
+podman build -t .
+podman images
+podman run -d --name web-container -p 8080:80 -v /web:/usr/local/apache2/htdocs:Z IMAGE_ID
+podman ps
+
+Scenario 2 : 
+podman pull docker.io/library/httpd
+podman images
+mkdir /web
+nano /web/mywebpage.html
+echo "It works" > /web/mywebpage.html
+podman run -d --name web-container -p 8080:80 -v /web:/usr/local/apache2/htdocs:Z  IMAGE_ID
+podman ps
+curl localhost:8080/mywebpage.html
+		Result : It works
+
+Scenario 3 : inside the container 
+podman pull docker.io/library/httpd
+podman images
+podman run -it IMAGE_ID /bin/bash
+	root@IMAGE_ID:/usr/local/apache2# hostname
+	root@IMAGE_ID:/usr/local/apache2# pwd
+	root@IMAGE_ID:/usr/local/apache2# find / -name index.html
+	/usr/local/apache2/htdocs/index.html
+	root@IMAGE_ID:/usr/local/apache2# 
+------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------
+BEFORE-EXAM-REFRESHERS : 
+------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------
+ENABLE & START ALL SERVICES
+------------------------------------------------------------------------------------------------------------------------------------------
+systemctl isolate graphical.target
+------------------------------------------------------------------------------------------------------------------------------------------
+2nd choice & cntrl + e
+4th line rd.break & cntrl + x
+mount -o remount, rw /sysroot
+chroot /sysroot
+passwd
+touch /.autorelabel
+exit
+exit
+------------------------------------------------------------------------------------------------------------------------------------------
+nano /home/user1/.bash_rc
+alias custom_command="rm -rf"
+HISTSIZE=5000
+alias pandora="echo Welcome" # Application called pandora
+umask 122 # Case of umask for a specefic user "user1"
+source .bash_rc
+------------------------------------------------------------------------------------------------------------------------------------------
+nano /home/user1/.bash_profile
+echo "welcome user $USER"
+source .bash_profile
+Result : 
+[user1@localhost]$ su - user1
+welcome user $USER
+------------------------------------------------------------------------------------------------------------------------------------------
+nano /etc/skel/
+touch /etc/skel/NEWS
+useradd test1
+cd /home/test1/
+Result :
+[root@localhost test1]# ls
+NEWS
+------------------------------------------------------------------------------------------------------------------------------------------
+source /etc/profile.d/words.sh
+echo $words 
+tekup
+useradd test2
+su - test2
+Result :
+[test2@localhost ~]$ echo $words
+tekup
+------------------------------------------------------------------------------------------------------------------------------------------
+REPLACE 1 CHAR
+grep bash /etc/passwd | tr / : 
+REPLACE +1 CHAR : 
+grep $'bash' /etc/passwd | sed 's/::/!!/g'
+------------------------------------------------------------------------------------------------------------------------------------------
+find /etc -perm -4000 -user natasha -name mayssa* -exec cp -a {} /home/mayssa \;
+1000 --> Sticky Bit to make only the owner of file or sub-directory can delete it. (o+t) 
+2000 --> GUID  every file or folder will be created on this folder, it will be owned group (g+s)
+3000 --> (1) & (2) 
+4000 --> SUID qui ont des privilèges du propriétaire
+------------------------------------------------------------------------------------------------------------------------------------------
+useradd -s /sbin/nologin blandine # no shell
+usermod -L blandine # Lock blandine's Account OR Password 
+chage -d 0 blandine # force blandine to change her password next time she logs in
+chage -I -1 == usermod -L == passwd -l == chage -E -1 # LOCK the account & EXPRIE the account
+useradd -b /web mayssa # Base directory of user mayssa is /web == home directory is : /web/mayssa
+------------------------------------------------------------------------------------------------------------------------------------------
+nano /etc/login.defs
+UID_MIN / UID_MAX
+GID_MIN / GID_MAX
+PASSWORD_MAX_DAY
+PASS_MIN_DAYS
+PASS_WARN_AGE
+UMASK # to change files defaults permissions for ALL users
+------------------------------------------------------------------------------------------------------------------------------------------
+nano /etc/security/pwquality.conf
+minlen = 7 # min password length
+ucredit = -1 # 1 uppercase
+------------------------------------------------------------------------------------------------------------------------------------------
+NFS : 
+Server : Same as AUTOFS (Share a file instead of a directory)
+Client : mount @_IP:/path_to_file_to_share /local_destination_path
+------------------------------------------------------------------------------------------------------------------------------------------
+nano /etc/selinux/config
+SELINUX=enforcing
+------------------------------------------------------------------------------------------------------------------------------------------
+STRATIS : 
+nano /etc/fstab 
+UUID=	/fileSystemmp xfs  x-systemd.requires=stratisd.service 0 0
+------------------------------------------------------------------------------------------------------------------------------------------
+LVM : 
+
+Ordre : 
+fdisk
+type lvm
+pvcreate
+vgcreate 
+lvcreate
+Extention : 
+pvcreate
+vgextend
+lvextend -r -L +SIZE or lvextend -r -l +NUM_EXTENTS 
+------------------------------------------------------------------------------------------------------------------------------------------
+systemctl set-default graphical.target
+nano /etc/default/grub
+Delete "rhgb quiet" from this line : 
+GRUB_CMDLINE_LINUX="crashkernel=1G-4G:192M,4G-64G:256M,64G-:512M resume=/dev/mapper/rhel-swap rd.lvm.lv=rhel/root rd.lvm.lv=rhel/swap rhgb quiet"
+
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+------------------------------------------------------------------------------------------------------------------------------------------
+nano /etc/yum.conf
+		installonly_limit=2
+dnf update kernel
+grubby --info=ALL
+grubby --set-default=<kernel_index_number>
+grub2-mkconfig -o /boot/grub2/grub.cfg
+uname -r
+------------------------------------------------------------------------------------------------------------------------------------------
+(1) Create a user account called user70 with UID 7000 and and logs in an inactive shell , and a comment “I am user70”. 
+useradd -u 7000 -c "I am user70" -s /sbin/nologin user70
+
+
+(2) Set the maximum allowable inactivity for this user to 22 days.
+passwd -i 22 user70 OR chage -I 22 user70
+To verify : passwd -S user70
+
+
+(3) Ensure that the user is forced to change their password at next login.
+passwd -e user70
+
+(4) Lock the account for user70 and confirm the changes.
+usermod -L user70 
+grep user70 /etc/shadow
+
+(5) Remove user70 along with their home and mail spool directories
+userdel -r user70
+------------------------------------------------------------------------------------------------------------------------------------------
+QUESTION (39') : Repos are available from the repo server at the following local urls for you to use during the exam :
+		/var/ftp/repo/BaseOS
+		/var/ftp/repo/AppStream
+nano /etc/yum.repos.d/BaseOS.repo
+[BaseOS]
+name=BaseOS
+baseurl=file:///var/ftp/repo/BaseOS
+enabled=1
+gpgcheck=0
+
+nano /etc/yum.repos.d/.repo
+[AppStream]
+name=AppStream
+baseurl=file:///var/ftp/repo/AppStream
+enabled=1
+gpgcheck=0
+------------------------------------------------------------------------------------------------------------------------------------------
+Golden Question #PDF-Converter#
+[root@client ~]# :
+useradd pod
+passwd pod
+loginctl enable-linger pod
+ssh pod@localhost
+
+
+[pod1@client ~]$ :
+wget https://raw.githubusercontent.com/sachinyadav3496/Text-To-PDF/master/pdf_converter.py
+wget https://raw.githubusercontent.com/sachinyadav3496/Text-To-PDF/master/Dockerfile
+
+
+[root@client ~]# :
+mkdir -p /data/input /data/output
+chown -R pod1:pod1 /data/
+chown -R pod1:pod1 /data/input /data/output/
+chmod 777 /data/input /data/output
+touch /data/input/file{1..5}.txt
+echo "Hello $USER, test file 1" > /data/input/file1.txt 
+echo "Hello $USER, test file 2" > /data/input/file2.txt  
+echo "Hello $USER, test file 3" >> /data/input/file3.txt 
+echo "Hello $USER, test file 4" >> /data/input/file4.txt 
+echo "Hello $USER, test file 5" >> /data/input/file5.txt 
+chown pod1:pod1 /data/input/*
+
+
+[pod1@client ~]$ :
+podman build -t pdf .
+podman images
+nano /data/input/file1.txt
+podman run -dt --name pdf-converter -v /data/input:/data/input:Z -v /data/output:/data/output:Z cb2e2a2bb38e
+mkdir -p ~/.config/systemd/user
+cd  ~/.config/systemd/user
+podman generate systemd --name myapp --files --new
+podman generate systemd --name pdf-converter --files --new
+systemctl --user daemon-reload 
+systemctl --user enable --now container-pdf-converter.service 
+systemctl --user restart --now container-pdf-converter.service 
+podman exec -it pdf-converter bash
+
+
+Testing Phase : 
+[pod@client ~]$ podman exec -it pdf-converter bash
+[root@2befe9ae19ba app]# ls -lh /data/input/
+total 20K
+-rw-r--r--. 1 root root 13 Dec 17 21:45 file1.txt
+-rw-r--r--. 1 root root 13 Dec 17 21:44 file2.txt
+-rw-r--r--. 1 root root 13 Dec 17 21:44 file3.txt
+-rw-r--r--. 1 root root 13 Dec 17 21:44 file4.txt
+-rw-r--r--. 1 root root 13 Dec 17 21:44 file5.txt
+[root@2befe9ae19ba app]# ls -lh /data/output/
+total 20K
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file1.pdf
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file2.pdf
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file3.pdf
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file4.pdf
+-rw-r--r--. 1 root root 962 Dec 17 21:46 file5.pdf
+------------------------------------------------------------------------------------------------------------------------------------------
+change the HISTSIZE value to 100000 for all system users.
+nano /etc/profile.d/histsize.sh
+	export HISTSIZE=100000000
+source /etc/profile.d/histsize.sh
